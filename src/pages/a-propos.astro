@@ -1,0 +1,69 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+const total = (await getCollection('posts')).length;
+const values = [
+  { icon: '◎', t: 'Utile avant tout', d: "Chaque article vise une intention claire : vous faire gagner du temps et vous aider à décider." },
+  { icon: '✦', t: 'Sans bruit', d: 'Pas de superflu, pas de jargon inutile. On va à l\'essentiel, avec rigueur.' },
+  { icon: '⤢', t: 'Multi-univers', d: 'Business, finance, tech, immobilier, santé, art de vivre : la curiosité comme ligne éditoriale.' },
+  { icon: '↻', t: 'Toujours à jour', d: 'Nos contenus sont revus et enrichis pour rester pertinents dans le temps.' },
+];
+---
+<Base title="À propos — Fr-business.net" description="Fr-business.net est un magazine indépendant qui décrypte le business, la tech, l'argent et l'art de vivre depuis 2016.">
+  <section class="wrap ab">
+    <div class="ab__hero reveal in">
+      <p class="eyebrow">Notre histoire</p>
+      <h1>Un magazine pour <span class="grad-word">décider mieux</span>.</h1>
+      <p class="ab__lead">Depuis 2016, Fr-business.net publie des analyses, des guides et des décryptages sur ce qui compte vraiment : entreprendre, investir, comprendre la tech et mieux vivre. {total.toLocaleString('fr-FR')} articles plus tard, la mission n'a pas bougé — vous donner une longueur d'avance, sans vous faire perdre de temps.</p>
+    </div>
+
+    <div class="ab__stats reveal" data-d="1">
+      <div><strong>{total.toLocaleString('fr-FR')}</strong><span>articles</span></div>
+      <div><strong>2016</strong><span>année de départ</span></div>
+      <div><strong>+10</strong><span>univers couverts</span></div>
+      <div><strong>100%</strong><span>indépendant</span></div>
+    </div>
+
+    <div class="ab__values">
+      {values.map((v, i) => (
+        <div class="card ab__val reveal" data-d={(i % 3)}>
+          <span class="ab__ico">{v.icon}</span>
+          <h3>{v.t}</h3>
+          <p>{v.d}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="cta reveal" style="margin-top:4rem">
+      <div class="cta__glow" aria-hidden="true"></div>
+      <h2>Envie de <span class="grad-word">lire</span> ?</h2>
+      <p>Plongez dans dix ans d'archives ou commencez par nos derniers décryptages.</p>
+      <div class="cta__row">
+        <a class="btn magnetic" data-strength="0.3" href="/articles">Explorer les articles <span class="arrow">→</span></a>
+        <a class="btn ghost magnetic" data-strength="0.25" href="/contact">Nous contacter</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ab { padding-top: 9rem; }
+  .ab__hero { max-width: 62ch; }
+  .ab__hero h1 { margin: .6rem 0; }
+  .ab__lead { color: var(--ink-2); font-size: 1.18rem; }
+  .ab__stats { margin-top: 3rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .ab__stats > div { padding: 1.6rem; border-radius: var(--radius); background: linear-gradient(160deg, var(--aqua-050), #fff); border: 1px solid var(--aqua-200); text-align: center; box-shadow: var(--shadow-card); }
+  .ab__stats strong { display: block; font-family: var(--font-display); font-size: 2rem; letter-spacing: -.02em; }
+  .ab__stats span { color: var(--ink-3); font-size: .9rem; }
+  .ab__values { margin-top: 1.6rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.4rem; }
+  .ab__val { padding: 1.8rem 2rem; }
+  .ab__ico { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 16px; background: var(--aqua-100); color: var(--aqua-700); font-size: 1.5rem; margin-bottom: 1rem; }
+  .ab__val h3 { margin-bottom: .5rem; }
+  .ab__val p { color: var(--ink-2); }
+  .cta { position: relative; text-align: center; padding: clamp(2.5rem, 6vw, 4rem) 1.5rem; border-radius: var(--radius-lg); background: radial-gradient(120% 140% at 50% 0%, var(--aqua-100), #fff 60%); border: 1px solid var(--aqua-200); overflow: hidden; box-shadow: var(--shadow-card); }
+  .cta__glow { position: absolute; top: -40%; left: 50%; width: 60%; height: 120%; transform: translateX(-50%); background: radial-gradient(circle, var(--aqua), transparent 60%); filter: blur(50px); opacity: .55; }
+  .cta h2, .cta p, .cta__row { position: relative; }
+  .cta p { margin: 1rem auto 0; max-width: 48ch; color: var(--ink-2); font-size: 1.1rem; }
+  .cta__row { margin-top: 2rem; display: flex; gap: .9rem; justify-content: center; flex-wrap: wrap; }
+  @media (max-width: 820px) { .ab__stats { grid-template-columns: repeat(2, 1fr); } .ab__values { grid-template-columns: 1fr; } }
+</style>

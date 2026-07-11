@@ -1,0 +1,16 @@
+{
+ "id": 521,
+ "slug": "comment-charger-un-mp3",
+ "title": "Comment charger un mp3 ?",
+ "date": "2022-09-07T12:08:13",
+ "modified": "2023-12-27T12:18:09",
+ "excerpt": "Après avoir ajouté une balise audio dans l&rsquo;en-tête de ce document, ajoutez une source pour votre musique comme ceci : Vous devez d&rsquo;abord ajouter une balise audio dans l&rsquo;en-tête de ce document : Pour ajouter une balise audio, vous devez d&rsquo;abord inclure une balise dans l&rsquo;",
+ "image": "/media/521.webp",
+ "imageAlt": "Comment charger un mp3 ?",
+ "category": "infos",
+ "tags": [],
+ "html": "<p>Après avoir ajouté une balise audio dans l&rsquo;en-tête de ce document, ajoutez une source pour votre musique comme ceci :</p>\n<h2>Vous devez d&rsquo;abord ajouter une balise audio dans l&rsquo;en-tête de ce document :</h2>\n<p>Pour ajouter une balise audio, vous devez d&rsquo;abord inclure une balise dans l&rsquo;en-tête de ce document. Ensuite, vous devez utiliser une balise pour spécifier votre fichier musical :</p>\n<p>L&rsquo;attribut src spécifie l&#8217;emplacement de votre fichier musical. L&rsquo;attribut controls détermine si votre lecteur dispose ou non de commandes (et si oui, à quoi elles ressemblent). L&rsquo;attribut autoplay détermine si votre lecteur lance automatiquement la lecture lorsqu&rsquo;il se charge.</p>\n<h2>Ajoutez une source de votre musique comme ceci :</h2>\n<p>Ok, donc vous avez votre source juste là dans l&rsquo;en-tête. Et maintenant ?</p>\n<p>Vous pouvez ajouter plusieurs sources dans l&rsquo;en-tête et elles seront toutes lues en même temps, un peu comme un vieux juke-box. Assurez-vous simplement que chaque source a une url différente. Si vous voulez faire cela, il suffit de mettre une autre balise juste à côté de celle que vous avez déjà ajoutée :</p>\n<h2>La balise audio doit être fermée</h2>\n<p>Une fois que vous avez chargé le MP3, il est important de fermer l&rsquo;élément audio et de s&rsquo;assurer qu&rsquo;il se trouve dans l&rsquo;en-tête du document.</p>\n<ul>\n<li>La balise audio doit être fermée</li>\n<li>La balise audio doit se trouver dans l&rsquo;en-tête du document.</li>\n<li>La balise audio doit avoir une source</li>\n<li>La balise audio doit avoir un type</li>\n<li>La balise audio doit comporter une boucle (le cas échéant).</li>\n</ul>\n<p><em><strong>Grâce à ce code, votre MP3 sera prêt à être lu !</strong></em></p>",
+ "readingTime": 3,
+ "faq": [],
+ "regenerated": false
+}

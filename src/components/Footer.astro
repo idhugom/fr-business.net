@@ -1,0 +1,52 @@
+---
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="wrap-wide">
+    <div style="display:grid;gap:3rem;grid-template-columns:1.4fr 1fr 1fr;align-items:start" class="footer-grid">
+      <div class="reveal">
+        <a href="/" class="brand" style="font-size:1.5rem"><span class="dot"></span>fr<span style="color:var(--aqua-700)">·</span>business</a>
+        <p style="margin-top:1rem;max-width:34ch;color:var(--ink-3)">
+          Le magazine indépendant qui décrypte le business, la tech, l'argent et l'art de vivre.
+          Des guides clairs pour décider mieux.
+        </p>
+        <div style="margin-top:1.4rem;display:flex;gap:.6rem">
+          <a class="btn ghost small magnetic" data-strength="0.2" href="/rss.xml" aria-label="Flux RSS">RSS</a>
+          <a class="btn ghost small magnetic" data-strength="0.2" href="/contact">Nous écrire</a>
+        </div>
+      </div>
+
+      <nav class="reveal" data-d="1" aria-label="Pied de page — explorer">
+        <p class="eyebrow" style="margin-bottom:1rem">Explorer</p>
+        <ul style="display:grid;gap:.65rem;color:var(--ink-2)">
+          <li><a href="/" class="foot-link">Accueil</a></li>
+          <li><a href="/articles" class="foot-link">Tous les articles</a></li>
+          <li><a href="/a-propos" class="foot-link">À propos</a></li>
+          <li><a href="/contact" class="foot-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <nav class="reveal" data-d="2" aria-label="Pied de page — informations">
+        <p class="eyebrow" style="margin-bottom:1rem">Informations</p>
+        <ul style="display:grid;gap:.65rem;color:var(--ink-2)">
+          <li><a href="/notification-legale" class="foot-link">Mentions légales</a></li>
+          <li><a href="/sitemap.xml" class="foot-link">Plan du site</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div aria-hidden="true" class="footer-word" style="margin-top:3rem">fr·business</div>
+
+    <div style="margin-top:1.5rem;display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:1.5rem;color:var(--ink-3);font-size:.9rem">
+      <span>© {year} Fr-business.net — Tous droits réservés.</span>
+      <span>Conçu avec <span style="color:var(--aqua-600)">✦</span> en France.</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .foot-link { position: relative; color: var(--ink-2); transition: color .3s; }
+  .foot-link::after { content:''; position:absolute; left:0; bottom:-2px; width:0; height:2px; background:var(--aqua); transition:width .3s var(--ease); }
+  .foot-link:hover { color: var(--ink); } .foot-link:hover::after { width:100%; }
+  @media (max-width: 780px){ .footer-grid { grid-template-columns: 1fr !important; gap: 2rem !important; } }
+</style>

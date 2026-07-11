@@ -1,0 +1,63 @@
+---
+interface Props {
+  post: {
+    slug: string;
+    title: string;
+    excerpt: string;
+    image?: string | null;
+    imageAlt?: string;
+    date: string;
+    readingTime?: number;
+  };
+  size?: 'sm' | 'md' | 'lg';
+  delay?: number;
+  eager?: boolean;
+}
+const { post, size = 'md', delay = 0, eager = false } = Astro.props;
+const href = `/infos/${post.slug}.html`;
+const d = new Date(post.date);
+const dateFr = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+const ratio = size === 'lg' ? '16 / 10' : '16 / 11';
+---
+<article class={`card acard acard--${size} reveal`} data-d={delay}>
+  <a href={href} class="acard__link" aria-label={post.title}>
+    <div class="acard__media" style={`aspect-ratio:${ratio}`}>
+      {post.image ? (
+        <img src={post.image} alt={post.imageAlt || post.title} loading={eager ? 'eager' : 'lazy'} decoding="async" width="640" height="400" />
+      ) : (
+        <div class="acard__ph" aria-hidden="true"><span>{post.title.charAt(0)}</span></div>
+      )}
+      <span class="acard__shine" aria-hidden="true"></span>
+    </div>
+    <div class="acard__body">
+      <div class="acard__meta">
+        <span class="pill">Infos</span>
+        <span class="acard__date">{dateFr}{post.readingTime ? ` · ${post.readingTime} min` : ''}</span>
+      </div>
+      <h3 class="acard__title">{post.title}</h3>
+      {size !== 'sm' && <p class="acard__excerpt">{post.excerpt}</p>}
+      <span class="acard__cta">Lire l'article <span class="arrow">→</span></span>
+    </div>
+  </a>
+</article>
+
+<style>
+  .acard { display: flex; }
+  .acard__link { display: flex; flex-direction: column; width: 100%; }
+  .acard__media { position: relative; overflow: hidden; background: var(--aqua-050); }
+  .acard__media img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease), filter .6s; }
+  .acard:hover .acard__media img { transform: scale(1.07); }
+  .acard__ph { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(120% 120% at 20% 10%, var(--aqua-200), var(--aqua-050) 55%, #fff); }
+  .acard__ph span { font-family: var(--font-display); font-weight: 700; font-size: 4rem; color: var(--aqua-500); opacity: .8; }
+  .acard__shine { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(6,17,15,.28)); opacity: .0; transition: opacity .5s; }
+  .acard:hover .acard__shine { opacity: 1; }
+  .acard__body { display: flex; flex-direction: column; gap: .7rem; padding: 1.3rem 1.4rem 1.5rem; flex: 1; }
+  .acard__meta { display: flex; align-items: center; gap: .8rem; }
+  .acard__date { font-size: .82rem; color: var(--ink-3); }
+  .acard__title { font-size: clamp(1.15rem, 1rem + .7vw, 1.5rem); line-height: 1.12; letter-spacing: -.015em; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .acard--lg .acard__title { font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.3rem); -webkit-line-clamp: 4; }
+  .acard__excerpt { color: var(--ink-3); font-size: .96rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .acard__cta { margin-top: auto; padding-top: .5rem; display: inline-flex; align-items: center; gap: .45rem; font-family: var(--font-display); font-weight: 600; font-size: .92rem; color: var(--aqua-800); }
+  .acard__cta .arrow { transition: transform .35s var(--ease); }
+  .acard:hover .acard__cta .arrow { transform: translateX(5px); }
+</style>

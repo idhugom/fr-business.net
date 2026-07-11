@@ -1,0 +1,25 @@
+# build output
+dist/
+.astro/
+
+# deps
+node_modules/
+
+# env
+.env
+.env.*
+!.env.example
+
+# logs
+npm-debug.log*
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# migration working files (large / regenerable)
+scripts/data/wp-posts.json
+scripts/data/batch/
+scripts/data/raw-images/
+scripts/.cache/

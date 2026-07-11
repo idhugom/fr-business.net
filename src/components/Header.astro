@@ -1,0 +1,30 @@
+---
+const path = Astro.url.pathname;
+const items = [
+  { href: '/', label: 'Accueil' },
+  { href: '/articles', label: 'Articles' },
+  { href: '/a-propos', label: 'À propos' },
+  { href: '/contact', label: 'Contact' },
+];
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href);
+---
+<header class="site-header">
+  <div class="wrap-wide bar">
+    <a href="/" class="brand" aria-label="Fr-business.net, accueil">
+      <span class="dot"></span>
+      <span>fr<span style="color:var(--aqua-700)">·</span>business</span>
+    </a>
+
+    <nav class="nav" aria-label="Navigation principale">
+      {items.map((it) => (
+        <a href={it.href} aria-current={isActive(it.href) ? 'page' : undefined}>{it.label}</a>
+      ))}
+      <a class="btn small magnetic" data-strength="0.25" href="/articles" style="margin-left:.4rem">
+        Explorer <span class="arrow">→</span>
+      </a>
+    </nav>
+
+    <button class="burger" aria-label="Ouvrir le menu" aria-expanded="false"><span></span></button>
+  </div>
+</header>

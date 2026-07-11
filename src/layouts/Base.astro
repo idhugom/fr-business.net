@@ -1,0 +1,186 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string | null;
+  canonical?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  jsonld?: object | object[];
+}
+
+const {
+  title,
+  description = 'Fr-business.net — le magazine des idées business, tech, argent et art de vivre. Analyses, guides pratiques et décryptages pour entreprendre et décider mieux.',
+  image = null,
+  canonical,
+  type = 'website',
+  noindex = false,
+  jsonld,
+} = Astro.props;
+
+const site = 'https://www.fr-business.net';
+const url = canonical ?? new URL(Astro.url.pathname, site).href;
+const ogImage = image
+  ? (image.startsWith('http') ? image : site + image)
+  : site + '/og-default.png';
+const fullTitle = title.includes('Fr-business') ? title : `${title} · Fr-business.net`;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href={url} />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#ADFFFF" />
+    <meta name="color-scheme" content="light" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content="Fr-business.net" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={url} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1536" />
+    <meta property="og:image:height" content="1024" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="alternate" type="application/rss+xml" title="Fr-business.net" href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap.xml" />
+
+    {jsonld && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />
+    )}
+  </head>
+  <body>
+    <!-- animated aurora background -->
+    <div class="aurora" aria-hidden="true"><span class="b1"></span><span class="b2"></span><span class="b3"></span></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <!-- custom cursor -->
+    <div class="cursor-ring" aria-hidden="true"></div>
+    <div class="cursor-dot" aria-hidden="true"></div>
+
+    <a class="sr-only" href="#main">Aller au contenu</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      // ---------- reveal on scroll ----------
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+        }
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      const observeReveals = () => document.querySelectorAll('.reveal:not(.in)').forEach((el) => io.observe(el));
+      observeReveals();
+      // safety net: nothing should ever stay hidden if IO misfires
+      const revealAll = () => document.querySelectorAll('.reveal:not(.in)').forEach((el) => el.classList.add('in'));
+      window.addEventListener('load', () => setTimeout(() => {
+        // reveal anything already within/near the viewport on load
+        document.querySelectorAll('.reveal:not(.in)').forEach((el) => {
+          const r = el.getBoundingClientRect();
+          if (r.top < window.innerHeight * 0.95) el.classList.add('in');
+        });
+      }, 60));
+      setTimeout(revealAll, 2600);
+
+      // ---------- custom cursor (spring) ----------
+      const ring = document.querySelector('.cursor-ring') as HTMLElement | null;
+      const dot = document.querySelector('.cursor-dot') as HTMLElement | null;
+      const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+        && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (fine && ring && dot) {
+        let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+        let rx = mx, ry = my;
+        window.addEventListener('pointermove', (e) => {
+          mx = e.clientX; my = e.clientY;
+          dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`;
+        }, { passive: true });
+        const loop = () => {
+          rx += (mx - rx) * 0.16; ry += (my - ry) * 0.16;
+          ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`;
+          requestAnimationFrame(loop);
+        };
+        requestAnimationFrame(loop);
+        const hoverSel = 'a, button, .card, .magnetic, summary, input, [data-cursor]';
+        document.addEventListener('pointerover', (e) => {
+          if ((e.target as HTMLElement).closest(hoverSel)) ring.classList.add('is-hover');
+        });
+        document.addEventListener('pointerout', (e) => {
+          if ((e.target as HTMLElement).closest(hoverSel)) ring.classList.remove('is-hover');
+        });
+        window.addEventListener('pointerdown', () => ring.classList.add('is-down'));
+        window.addEventListener('pointerup', () => ring.classList.remove('is-down'));
+      }
+
+      // ---------- card pointer-follow glow ----------
+      document.addEventListener('pointermove', (e) => {
+        const card = (e.target as HTMLElement).closest('.card') as HTMLElement | null;
+        if (!card) return;
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+        card.style.setProperty('--my', `${e.clientY - r.top}px`);
+      }, { passive: true });
+
+      // ---------- magnetic buttons ----------
+      if (fine) {
+        document.querySelectorAll<HTMLElement>('.magnetic').forEach((el) => {
+          const strength = Number(el.dataset.strength ?? 0.35);
+          el.addEventListener('pointermove', (e) => {
+            const r = el.getBoundingClientRect();
+            const x = e.clientX - r.left - r.width / 2;
+            const y = e.clientY - r.top - r.height / 2;
+            el.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
+          });
+          el.addEventListener('pointerleave', () => { el.style.transform = ''; });
+        });
+      }
+
+      // ---------- header hide/reveal + scrolled ----------
+      const header = document.querySelector('.site-header') as HTMLElement | null;
+      if (header) {
+        let last = 0;
+        const onScroll = () => {
+          const y = window.scrollY;
+          header.classList.toggle('scrolled', y > 24);
+          if (y > last && y > 320) header.classList.add('hide');
+          else header.classList.remove('hide');
+          last = y;
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+      }
+
+      // ---------- mobile nav ----------
+      const burger = document.querySelector('.burger');
+      const nav = document.querySelector('.nav');
+      burger?.addEventListener('click', () => {
+        burger.classList.toggle('open');
+        nav?.classList.toggle('open');
+      });
+
+      // expose observer for pages that inject content
+      (window as any).__observeReveals = observeReveals;
+    </script>
+  </body>
+</html>

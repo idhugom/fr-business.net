@@ -1,0 +1,88 @@
+---
+import Base from '../layouts/Base.astro';
+const email = 'kal.delay167@passmail.com';
+---
+<Base title="Contact — Fr-business.net" description="Une question, une suggestion, une correction ou une proposition de collaboration ? Écrivez à la rédaction de Fr-business.net.">
+  <section class="wrap ct">
+    <div class="ct__head reveal in">
+      <p class="eyebrow">On vous écoute</p>
+      <h1>Parlons-en.</h1>
+      <p class="ct__lead">Une question sur un article, une correction, une idée de sujet ou une proposition de partenariat&nbsp;? La rédaction lit tous les messages et répond généralement sous 48&nbsp;h ouvrées.</p>
+    </div>
+
+    <div class="ct__grid">
+      <div class="card ct__form reveal" data-d="1">
+        <form id="ctform">
+          <div class="fld">
+            <label for="name">Votre nom</label>
+            <input id="name" name="name" type="text" required placeholder="Camille Martin" />
+          </div>
+          <div class="fld">
+            <label for="from">Votre e-mail</label>
+            <input id="from" name="from" type="email" required placeholder="vous@exemple.fr" />
+          </div>
+          <div class="fld">
+            <label for="subject">Sujet</label>
+            <input id="subject" name="subject" type="text" placeholder="À propos de…" />
+          </div>
+          <div class="fld">
+            <label for="msg">Message</label>
+            <textarea id="msg" name="msg" rows="5" required placeholder="Écrivez votre message…"></textarea>
+          </div>
+          <button class="btn magnetic" data-strength="0.25" type="submit">Envoyer le message <span class="arrow">→</span></button>
+          <p class="ct__hint">Le bouton ouvre votre logiciel de messagerie, pré-rempli.</p>
+        </form>
+      </div>
+
+      <aside class="ct__aside reveal" data-d="2">
+        <div class="card ct__contact">
+          <p class="eyebrow">Par e-mail</p>
+          <a class="ct__email" href={`mailto:${email}`}>{email}</a>
+          <p style="color:var(--ink-3);margin-top:.6rem">Le canal le plus direct pour joindre la rédaction.</p>
+        </div>
+        <div class="card ct__box">
+          <h3>Ce qu'on adore recevoir</h3>
+          <ul class="ct__list">
+            <li>Des retours sur nos analyses</li>
+            <li>Des sujets qu'on aurait manqués</li>
+            <li>Des corrections factuelles</li>
+            <li>Des propositions de collaboration</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <script is:inline define:vars={{ email }}>
+    const f = document.getElementById('ctform');
+    f?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const g = (id) => (document.getElementById(id)?.value || '').trim();
+      const subject = g('subject') || 'Contact via Fr-business.net';
+      const body = `Nom : ${g('name')}\nE-mail : ${g('from')}\n\n${g('msg')}`;
+      window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    });
+  </script>
+</Base>
+
+<style>
+  .ct { padding-top: 9rem; }
+  .ct__head { max-width: 60ch; }
+  .ct__head h1 { margin: .6rem 0; }
+  .ct__lead { color: var(--ink-2); font-size: 1.15rem; }
+  .ct__grid { margin-top: 2.6rem; display: grid; grid-template-columns: 1.3fr .9fr; gap: 1.6rem; align-items: start; }
+  .ct__form { padding: 2rem 2.1rem; }
+  .fld { margin-bottom: 1.1rem; display: grid; gap: .45rem; }
+  .fld label { font-family: var(--font-display); font-weight: 600; font-size: .9rem; }
+  .fld input, .fld textarea { width: 100%; padding: .85rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--line); background: rgba(255,255,255,.7); transition: border-color .3s, box-shadow .3s; font-size: 1rem; resize: vertical; }
+  .fld input:focus, .fld textarea:focus { outline: none; border-color: var(--aqua-400); box-shadow: var(--glow-soft); }
+  .ct__hint { margin-top: .8rem; color: var(--ink-3); font-size: .85rem; }
+  .ct__aside { display: grid; gap: 1.4rem; }
+  .ct__contact, .ct__box { padding: 1.6rem 1.8rem; }
+  .ct__email { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; color: var(--aqua-800); box-shadow: inset 0 -2px 0 var(--aqua); word-break: break-all; }
+  .ct__box h3 { margin-bottom: .9rem; }
+  .ct__list { display: grid; gap: .6rem; }
+  .ct__list li { position: relative; padding-left: 1.6rem; color: var(--ink-2); }
+  .ct__list li::before { content: '✦'; position: absolute; left: 0; color: var(--aqua-600); }
+  @media (max-width: 820px) { .ct__grid { grid-template-columns: 1fr; } }
+</style>

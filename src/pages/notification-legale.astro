@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+const email = 'kal.delay167@passmail.com';
+---
+<Base title="Mentions légales — Fr-business.net" description="Mentions légales et informations sur l'éditeur et l'hébergeur du site Fr-business.net." noindex={true}>
+  <section class="wrap legal">
+    <div class="reveal in">
+      <p class="eyebrow">Informations légales</p>
+      <h1>Mentions légales</h1>
+    </div>
+
+    <div class="prose reveal" data-d="1" style="margin-top:2rem">
+      <div class="callout info">
+        <strong>Contact</strong><br />
+        Vous pouvez nous joindre à <a href={`mailto:${email}`}>{email}</a> pour toute demande.
+      </div>
+
+      <h2>Éditeur du site</h2>
+      <p>Le site <strong>Fr-business.net</strong> est détenu par le manager de l'entreprise indiquée sur cette page. Le responsable de la société citée est le directeur de la publication.</p>
+
+      <h2>Hébergement</h2>
+      <p>L'hébergement est assuré par&nbsp;:</p>
+      <div class="table-wrap">
+        <table>
+          <tbody>
+            <tr><th>Hébergeur</th><td>o2switch</td></tr>
+            <tr><th>SIRET</th><td>510 909 807 00032</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Propriété intellectuelle</h2>
+      <p>L'ensemble des contenus (textes, visuels, éléments graphiques) présents sur ce site est protégé par le droit d'auteur. Toute reproduction, représentation ou diffusion, totale ou partielle, sans autorisation préalable est interdite.</p>
+
+      <h2>Responsabilité</h2>
+      <p>Les informations publiées sur Fr-business.net sont fournies à titre indicatif et ne sauraient constituer un conseil professionnel personnalisé. L'éditeur s'efforce d'assurer l'exactitude des informations mais ne peut en garantir l'exhaustivité ni l'actualité permanente.</p>
+
+      <h2>Contact</h2>
+      <p>Pour toute question relative à ces mentions légales ou au traitement de vos données, écrivez-nous à <a href={`mailto:${email}`}>{email}</a>.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .legal { padding-top: 9rem; max-width: 760px; }
+  .legal .prose { max-width: none; }
+</style>

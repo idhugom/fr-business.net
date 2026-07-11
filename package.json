@@ -1,0 +1,21 @@
+{
+  "name": "fr-business",
+  "type": "module",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Fr-business.net — magazine business, tech & lifestyle",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.11",
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource-variable/space-grotesk": "^5.2.10",
+    "astro": "^5.13.0",
+    "sharp": "^0.34.2"
+  }
+}

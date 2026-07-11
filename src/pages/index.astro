@@ -1,0 +1,263 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+
+const all = (await getCollection('posts')).sort(
+  (a, b) => +new Date(b.data.date) - +new Date(a.data.date)
+);
+const featured = all[0];
+const floating = all.slice(1, 4);
+const grid = all.slice(4, 13);
+const strip = all.slice(13, 17);
+
+const topics = [
+  'Business', 'Finance', 'Marketing', 'Immobilier', 'Tech',
+  'Santé', 'Entreprise', 'Lifestyle', 'Assurance', 'Écologie',
+];
+const total = all.length;
+
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Fr-business.net',
+  url: 'https://www.fr-business.net/',
+  inLanguage: 'fr-FR',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: 'https://www.fr-business.net/articles?q={search_term_string}',
+    'query-input': 'required name=search_term_string',
+  },
+};
+---
+<Base title="Fr-business.net — le magazine business, tech, argent & art de vivre" jsonld={jsonld}>
+  <!-- ============================= HERO ============================= -->
+  <section class="hero">
+    <div class="wrap-wide hero__grid">
+      <div class="hero__intro">
+        <p class="eyebrow reveal in">Le magazine indépendant</p>
+        <h1 class="hero__title reveal in">
+          Décryptez le <span class="grad-word">business</span>,<br />
+          la tech &amp; <span class="grad-word">l'art de décider</span>.
+        </h1>
+        <p class="hero__lead reveal in" data-d="1">
+          {total.toLocaleString('fr-FR')} analyses, guides et enquêtes pour entreprendre,
+          investir et vivre mieux. Clair, utile, sans bruit.
+        </p>
+        <div class="hero__cta reveal in" data-d="2">
+          <a class="btn magnetic" data-strength="0.3" href="/articles">Explorer les articles <span class="arrow">→</span></a>
+          <a class="btn ghost magnetic" data-strength="0.25" href={`/infos/${featured.data.slug}.html`}>Lire à la une</a>
+        </div>
+        <dl class="hero__stats reveal in" data-d="3">
+          <div><dt>{total.toLocaleString('fr-FR')}</dt><dd>articles publiés</dd></div>
+          <div><dt>2016</dt><dd>depuis</dd></div>
+          <div><dt>+10</dt><dd>univers couverts</dd></div>
+        </dl>
+      </div>
+
+      <div class="hero__stage" id="heroStage" aria-hidden="false">
+        {floating.map((p, i) => (
+          <a href={`/infos/${p.data.slug}.html`} class={`floatcard fc${i} badge-float`} data-depth={(i + 1) * 6} style={`animation-delay:${i * 1.1}s`}>
+            <div class="floatcard__img" style={p.data.image ? `background-image:url('${p.data.image}')` : ''}>
+              {!p.data.image && <span class="floatcard__ph">{p.data.title.charAt(0)}</span>}
+            </div>
+            <div class="floatcard__cap">
+              <span class="pill">Infos</span>
+              <strong>{p.data.title}</strong>
+            </div>
+          </a>
+        ))}
+        <div class="hero__blur" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="hero__scroll" aria-hidden="true"><span></span>défiler</div>
+  </section>
+
+  <!-- ============================= MARQUEE ============================= -->
+  <section class="marquee" aria-hidden="true" style="padding:1.4rem 0;border-block:1px solid var(--line);background:var(--paper-2)">
+    <div class="marquee__track">
+      {[...topics, ...topics].map((t) => <span class="marquee__item">{t}</span>)}
+    </div>
+  </section>
+
+  <!-- ============================= FEATURED ============================= -->
+  <section class="wrap-wide" style="margin-top:5.5rem">
+    <div class="sec-head reveal">
+      <p class="eyebrow">À la une</p>
+      <h2>Le grand format du moment</h2>
+    </div>
+    <a href={`/infos/${featured.data.slug}.html`} class="card feat reveal" data-d="1">
+      <div class="feat__media">
+        {featured.data.image
+          ? <img src={featured.data.image} alt={featured.data.imageAlt || featured.data.title} width="900" height="600" loading="eager" fetchpriority="high" />
+          : <div class="acard__ph"><span>{featured.data.title.charAt(0)}</span></div>}
+      </div>
+      <div class="feat__body">
+        <div class="acard__meta"><span class="pill">Infos</span><span class="acard__date">{new Date(featured.data.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} · {featured.data.readingTime} min</span></div>
+        <h3 class="feat__title">{featured.data.title}</h3>
+        <p class="feat__excerpt">{featured.data.excerpt}</p>
+        <span class="btn small" style="margin-top:.6rem;pointer-events:none">Lire le dossier <span class="arrow">→</span></span>
+      </div>
+    </a>
+  </section>
+
+  <!-- ============================= LATEST GRID ============================= -->
+  <section class="wrap-wide" style="margin-top:6rem">
+    <div class="sec-head reveal" style="display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:1rem">
+      <div>
+        <p class="eyebrow">Fraîchement publié</p>
+        <h2>Les dernières analyses</h2>
+      </div>
+      <a class="btn ghost small magnetic" data-strength="0.2" href="/articles">Tout voir <span class="arrow">→</span></a>
+    </div>
+    <div class="grid-editorial">
+      {grid.map((p, i) => (
+        <ArticleCard post={{ ...p.data }} size={i === 0 ? 'lg' : 'md'} delay={(i % 3) as number} />
+      ))}
+    </div>
+  </section>
+
+  <!-- ============================= TOPICS ============================= -->
+  <section class="wrap-wide" style="margin-top:6rem">
+    <div class="topics card reveal">
+      <div class="topics__head">
+        <p class="eyebrow">Explorer par thème</p>
+        <h2>Trouvez votre <span class="aqua-text">sujet</span></h2>
+        <p style="color:var(--ink-3);max-width:46ch">Naviguez dans dix ans d'articles. Chaque thème ouvre une recherche instantanée dans nos archives.</p>
+      </div>
+      <div class="topics__cloud">
+        {topics.map((t, i) => (
+          <a class="topic-pill magnetic" data-strength="0.2" href={`/articles?q=${encodeURIComponent(t.toLowerCase())}`} style={`--i:${i}`}>{t}</a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= STRIP ============================= -->
+  <section class="wrap-wide" style="margin-top:5rem">
+    <div class="sec-head reveal"><p class="eyebrow">À ne pas manquer</p><h2>Continuez la lecture</h2></div>
+    <div class="strip">
+      {strip.map((p, i) => <ArticleCard post={{ ...p.data }} size="sm" delay={(i % 3) as number} />)}
+    </div>
+  </section>
+
+  <!-- ============================= CTA ============================= -->
+  <section class="wrap" style="margin-top:6rem">
+    <div class="cta reveal">
+      <div class="cta__glow" aria-hidden="true"></div>
+      <h2>Ne ratez plus un <span class="grad-word">décryptage</span>.</h2>
+      <p>Ajoutez notre flux à votre lecteur, ou explorez l'intégralité des archives. Zéro spam, que du fond.</p>
+      <div class="cta__row">
+        <a class="btn magnetic" data-strength="0.3" href="/articles">Parcourir tous les articles <span class="arrow">→</span></a>
+        <a class="btn ghost magnetic" data-strength="0.25" href="/rss.xml">S'abonner au flux RSS</a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // hero cards parallax follow mouse
+    const stage = document.getElementById('heroStage');
+    if (stage && window.matchMedia('(hover:hover) and (pointer:fine)').matches
+        && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const cards = stage.querySelectorAll<HTMLElement>('.floatcard');
+      window.addEventListener('pointermove', (e) => {
+        const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+        const dx = (e.clientX - cx) / cx, dy = (e.clientY - cy) / cy;
+        cards.forEach((c) => {
+          const depth = Number(c.dataset.depth ?? 6);
+          c.style.setProperty('--px', `${-dx * depth}px`);
+          c.style.setProperty('--py', `${-dy * depth}px`);
+          c.style.setProperty('--rx', `${dy * 4}deg`);
+          c.style.setProperty('--ry', `${dx * 5}deg`);
+        });
+      }, { passive: true });
+    }
+  </script>
+</Base>
+
+<style>
+  .hero { position: relative; padding: 10rem 0 4rem; min-height: 88vh; display: flex; flex-direction: column; justify-content: center; }
+  .hero__grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 3rem; align-items: center; }
+  .hero__title { margin-top: 1.1rem; font-size: clamp(2.6rem, 1rem + 6.4vw, 5.6rem); }
+  .hero__lead { margin-top: 1.6rem; font-size: clamp(1.1rem, 1rem + .5vw, 1.35rem); color: var(--ink-2); max-width: 46ch; }
+  .hero__cta { margin-top: 2rem; display: flex; gap: .9rem; flex-wrap: wrap; }
+  .hero__stats { margin-top: 2.8rem; display: flex; gap: 2.6rem; flex-wrap: wrap; }
+  .hero__stats dt { font-family: var(--font-display); font-weight: 700; font-size: 1.9rem; letter-spacing: -.02em; color: var(--ink); }
+  .hero__stats dd { color: var(--ink-3); font-size: .9rem; }
+
+  /* floating hero cards */
+  .hero__stage { position: relative; height: 520px; }
+  .hero__blur { position: absolute; inset: 10% 10%; background: radial-gradient(circle, var(--aqua), transparent 65%); filter: blur(40px); opacity: .6; z-index: -1; }
+  .floatcard {
+    position: absolute; width: 300px; border-radius: var(--radius);
+    background: rgba(255,255,255,.82); border: 1px solid var(--line);
+    box-shadow: var(--shadow-float); backdrop-filter: blur(12px); overflow: hidden;
+    transform: translate(var(--px,0), var(--py,0)) perspective(900px) rotateX(var(--rx,0)) rotateY(var(--ry,0));
+    transition: transform .3s var(--ease), box-shadow .4s;
+  }
+  .floatcard:hover { box-shadow: 0 40px 80px -28px rgba(10,110,110,.6); z-index: 5 !important; }
+  .fc0 { top: 2%; right: 6%; z-index: 3; }
+  .fc1 { top: 34%; left: 0; z-index: 4; width: 280px; }
+  .fc2 { bottom: 2%; right: 14%; z-index: 2; width: 260px; }
+  .floatcard__img { aspect-ratio: 16/10; background-size: cover; background-position: center; display: grid; place-items: center; background-color: var(--aqua-100); }
+  .floatcard__ph { font-family: var(--font-display); font-weight: 700; font-size: 3rem; color: var(--aqua-500); }
+  .floatcard__cap { padding: .9rem 1rem 1.1rem; display: grid; gap: .5rem; }
+  .floatcard__cap strong { font-family: var(--font-display); font-weight: 600; font-size: 1rem; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+  .hero__scroll { position: absolute; bottom: 1.4rem; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: .5rem; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+  .hero__scroll span { width: 22px; height: 34px; border: 1.5px solid var(--aqua-500); border-radius: 12px; position: relative; }
+  .hero__scroll span::before { content: ''; position: absolute; top: 6px; left: 50%; width: 3px; height: 6px; border-radius: 3px; background: var(--aqua-600); transform: translateX(-50%); animation: scrolldot 1.8s var(--ease-in-out) infinite; }
+  @keyframes scrolldot { 50% { transform: translate(-50%, 12px); opacity: .3; } }
+
+  .sec-head { margin-bottom: 2rem; }
+  .sec-head h2 { margin-top: .5rem; }
+
+  /* featured */
+  .feat { display: grid; grid-template-columns: 1.15fr 1fr; align-items: stretch; }
+  .feat__media { position: relative; overflow: hidden; min-height: 340px; }
+  .feat__media img { width: 100%; height: 100%; object-fit: cover; transition: transform .9s var(--ease); }
+  .feat:hover .feat__media img { transform: scale(1.05); }
+  .feat__body { padding: 2.4rem 2.6rem; display: flex; flex-direction: column; gap: 1rem; justify-content: center; }
+  .feat__title { font-size: clamp(1.6rem, 1.1rem + 2vw, 2.6rem); line-height: 1.08; }
+  .feat__excerpt { color: var(--ink-2); font-size: 1.05rem; }
+
+  /* editorial grid */
+  .grid-editorial { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+  .grid-editorial > :global(.acard--lg) { grid-column: span 2; grid-row: span 2; }
+  .grid-editorial > :global(.acard--lg) :global(.acard__media) { aspect-ratio: 16/12; }
+
+  /* topics */
+  .topics { padding: 3rem clamp(1.4rem, 4vw, 3.5rem); display: grid; grid-template-columns: .9fr 1.1fr; gap: 2.5rem; align-items: center; background: linear-gradient(140deg, var(--paper-2), #fff 60%); }
+  .topics__head h2 { margin: .4rem 0 .8rem; }
+  .topics__cloud { display: flex; flex-wrap: wrap; gap: .8rem; }
+  .topic-pill { display: inline-flex; padding: .8rem 1.3rem; border-radius: 999px; font-family: var(--font-display); font-weight: 600; background: #fff; border: 1px solid var(--aqua-200); color: var(--ink); box-shadow: var(--shadow-card); transition: transform .35s var(--ease), box-shadow .35s, background .3s, color .3s; }
+  .topic-pill:hover { background: var(--aqua); box-shadow: var(--glow); }
+
+  /* strip */
+  .strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.3rem; }
+
+  /* CTA */
+  .cta { position: relative; text-align: center; padding: clamp(2.5rem, 6vw, 5rem) 1.5rem; border-radius: var(--radius-lg); background: radial-gradient(120% 140% at 50% 0%, var(--aqua-100), #fff 60%); border: 1px solid var(--aqua-200); overflow: hidden; box-shadow: var(--shadow-card); }
+  .cta__glow { position: absolute; top: -40%; left: 50%; width: 60%; height: 120%; transform: translateX(-50%); background: radial-gradient(circle, var(--aqua), transparent 60%); filter: blur(50px); opacity: .55; }
+  .cta h2 { position: relative; }
+  .cta p { position: relative; margin: 1rem auto 0; max-width: 52ch; color: var(--ink-2); font-size: 1.1rem; }
+  .cta__row { position: relative; margin-top: 2rem; display: flex; gap: .9rem; justify-content: center; flex-wrap: wrap; }
+
+  @media (max-width: 960px) {
+    .hero__grid { grid-template-columns: 1fr; }
+    .hero__stage { height: 400px; margin-top: 1rem; }
+    .feat { grid-template-columns: 1fr; }
+    .feat__media { min-height: 240px; }
+    .topics { grid-template-columns: 1fr; }
+    .grid-editorial { grid-template-columns: repeat(2, 1fr); }
+    .grid-editorial > :global(.acard--lg) { grid-column: span 2; grid-row: auto; }
+    .strip { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .hero { padding-top: 8rem; }
+    .grid-editorial, .strip { grid-template-columns: 1fr; }
+    .grid-editorial > :global(.acard--lg) { grid-column: auto; }
+    .floatcard { width: 240px !important; }
+  }
+</style>

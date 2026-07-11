@@ -1,0 +1,131 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+
+const all = (await getCollection('posts')).sort(
+  (a, b) => +new Date(b.data.date) - +new Date(a.data.date)
+);
+const first = all.slice(0, 18);
+const total = all.length;
+---
+<Base title="Tous les articles — Fr-business.net" description={`Explorez les ${total} articles de Fr-business.net : business, finance, tech, immobilier, santé et art de vivre. Recherche instantanée dans dix ans d'archives.`}>
+  <section class="arc-hero wrap-wide">
+    <p class="eyebrow reveal in">Les archives</p>
+    <h1 class="reveal in" data-d="1">Tous les <span class="grad-word">articles</span></h1>
+    <p class="arc-lead reveal in" data-d="2">{total.toLocaleString('fr-FR')} analyses et guides, à portée de recherche.</p>
+
+    <div class="search reveal in" data-d="3">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m20 20-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="q" type="search" placeholder="Rechercher un sujet, un mot-clé…" autocomplete="off" aria-label="Rechercher" />
+      <button id="clear" class="search__clear" aria-label="Effacer" hidden>✕</button>
+    </div>
+    <p id="count" class="arc-count" aria-live="polite"></p>
+  </section>
+
+  <section class="wrap-wide" style="margin-top:2.5rem">
+    <div id="grid" class="arc-grid">
+      {first.map((p, i) => <ArticleCard post={{ ...p.data }} delay={(i % 3) as number} eager={i < 3} />)}
+    </div>
+    <div style="text-align:center;margin-top:3rem">
+      <button id="more" class="btn magnetic" data-strength="0.25">Charger plus d'articles <span class="arrow">↓</span></button>
+    </div>
+  </section>
+
+  <script>
+    const PAGE = 18;
+    const grid = document.getElementById('grid')!;
+    const moreBtn = document.getElementById('more') as HTMLButtonElement;
+    const input = document.getElementById('q') as HTMLInputElement;
+    const clearBtn = document.getElementById('clear') as HTMLButtonElement;
+    const countEl = document.getElementById('count')!;
+    let data: any[] = [];
+    let filtered: any[] = [];
+    let shown = PAGE;
+    let mode: 'initial' | 'search' = 'initial';
+
+    const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const dfmt = (iso: string) => new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+
+    function card(p: any, i: number) {
+      const media = p.i
+        ? `<div class="acard__media" style="aspect-ratio:16/11"><img src="${p.i}" alt="${p.t.replace(/"/g,'&quot;')}" loading="lazy" decoding="async" width="640" height="400"><span class="acard__shine"></span></div>`
+        : `<div class="acard__media" style="aspect-ratio:16/11"><div class="acard__ph"><span>${p.t.charAt(0)}</span></div><span class="acard__shine"></span></div>`;
+      return `<article class="card acard acard--md reveal" data-d="${i%3}"><a href="/infos/${p.s}.html" class="acard__link">${media}<div class="acard__body"><div class="acard__meta"><span class="pill">Infos</span><span class="acard__date">${dfmt(p.d)} · ${p.r} min</span></div><h3 class="acard__title">${p.t}</h3><p class="acard__excerpt">${p.e}</p><span class="acard__cta">Lire l'article <span class="arrow">→</span></span></div></a></article>`;
+    }
+
+    function render(reset: boolean) {
+      const slice = filtered.slice(0, shown);
+      grid.innerHTML = slice.map((p, i) => card(p, i)).join('');
+      moreBtn.style.display = shown >= filtered.length ? 'none' : '';
+      countEl.textContent = mode === 'search'
+        ? `${filtered.length} résultat${filtered.length > 1 ? 's' : ''}`
+        : '';
+      (window as any).__observeReveals?.();
+      // in search mode reveal immediately
+      if (mode === 'search') grid.querySelectorAll('.reveal').forEach((el) => el.classList.add('in'));
+    }
+
+    async function ensureData() {
+      if (data.length) return;
+      const res = await fetch('/search-index.json');
+      data = await res.json();
+    }
+
+    async function doSearch(qRaw: string) {
+      const q = norm(qRaw.trim());
+      clearBtn.hidden = !qRaw;
+      if (!q) {
+        mode = 'initial';
+        location.hash = '';
+        // restore SSR grid by reload-lite: fetch all and show first page
+        await ensureData();
+        filtered = data;
+        shown = PAGE;
+        render(true);
+        countEl.textContent = '';
+        return;
+      }
+      await ensureData();
+      mode = 'search';
+      const terms = q.split(/\s+/);
+      filtered = data.filter((p) => {
+        const hay = norm(p.t + ' ' + p.e);
+        return terms.every((t) => hay.includes(t));
+      });
+      shown = PAGE;
+      render(true);
+    }
+
+    moreBtn.addEventListener('click', async () => {
+      await ensureData();
+      if (mode === 'initial' && !filtered.length) filtered = data;
+      shown += PAGE;
+      render(false);
+    });
+
+    let deb: any;
+    input.addEventListener('input', () => { clearTimeout(deb); deb = setTimeout(() => doSearch(input.value), 160); });
+    clearBtn.addEventListener('click', () => { input.value = ''; doSearch(''); input.focus(); });
+
+    // deep-link ?q= from topic pills
+    const params = new URLSearchParams(location.search);
+    const initialQ = params.get('q');
+    if (initialQ) { input.value = initialQ; doSearch(initialQ); }
+  </script>
+</Base>
+
+<style>
+  .arc-hero { padding-top: 9rem; text-align: center; }
+  .arc-hero h1 { margin: .6rem 0; }
+  .arc-lead { color: var(--ink-2); font-size: 1.15rem; }
+  .search { margin: 2rem auto 0; max-width: 620px; display: flex; align-items: center; gap: .8rem; padding: .3rem .3rem .3rem 1.2rem; border-radius: 999px; background: rgba(255,255,255,.8); border: 1px solid var(--line); box-shadow: var(--shadow-card); backdrop-filter: blur(10px); transition: border-color .3s, box-shadow .3s; }
+  .search:focus-within { border-color: var(--aqua-400); box-shadow: var(--glow); }
+  .search svg { color: var(--aqua-700); flex: none; }
+  .search input { flex: 1; border: none; background: none; outline: none; padding: .85rem 0; font-size: 1.05rem; }
+  .search__clear { width: 40px; height: 40px; border-radius: 50%; background: var(--aqua-100); color: var(--aqua-800); flex: none; }
+  .arc-count { margin-top: 1rem; color: var(--ink-3); font-size: .95rem; height: 1.2em; }
+  .arc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+  @media (max-width: 900px) { .arc-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .arc-grid { grid-template-columns: 1fr; } }
+</style>

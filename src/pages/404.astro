@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Page introuvable — Fr-business.net" description="La page demandée n'existe pas ou a été déplacée." noindex={true}>
+  <section class="wrap nf">
+    <div class="nf__num badge-float">404</div>
+    <h1 class="reveal in">Cette page s'est <span class="grad-word">évaporée</span>.</h1>
+    <p class="reveal in" data-d="1">Le lien est peut-être ancien ou mal orthographié. Retrouvez votre chemin ci-dessous.</p>
+    <div class="nf__cta reveal in" data-d="2">
+      <a class="btn magnetic" data-strength="0.3" href="/">Retour à l'accueil <span class="arrow">→</span></a>
+      <a class="btn ghost magnetic" data-strength="0.25" href="/articles">Parcourir les articles</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf { padding: 12rem 0 8rem; text-align: center; }
+  .nf__num { font-family: var(--font-display); font-weight: 700; font-size: clamp(6rem, 22vw, 16rem); line-height: .9; letter-spacing: -.04em; color: transparent; -webkit-text-stroke: 2px var(--aqua-500); }
+  .nf h1 { margin: .5rem auto 1rem; max-width: 18ch; }
+  .nf p { color: var(--ink-2); max-width: 46ch; margin-inline: auto; font-size: 1.1rem; }
+  .nf__cta { margin-top: 2rem; display: flex; gap: .9rem; justify-content: center; flex-wrap: wrap; }
+</style>
