@@ -5,8 +5,11 @@ import ArticleCard from '../../components/ArticleCard.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
+  // Emit the physical file as {slug}.html.html so Cloudflare Pages' clean-URL
+  // rule serves the legacy permalink /infos/{slug}.html with a 200 (not a 308
+  // redirect to an extensionless URL). Preserves the old URLs byte-for-byte.
   return posts.map((post) => ({
-    params: { slug: post.data.slug },
+    params: { slug: `${post.data.slug}.html` },
     props: { post, posts },
   }));
 }
