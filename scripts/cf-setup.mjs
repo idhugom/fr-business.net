@@ -99,19 +99,19 @@ if (cmd === 'create') {
     console.log('attach domain', dom, ':', r.ok ? 'ok' : JSON.stringify(r.json.errors));
   }
 
-  // 2. DNS records -> point to the pages.dev project (CNAME, proxied)
+  // 2. DNS records -> point to the pages.dev project (CNAME, proxied).
+  //    Attaching a custom domain in the same account usually auto-creates the
+  //    record; only create if missing (never delete a Pages-managed record).
   const dns = [
     { type: 'CNAME', name: WWW, content: subdomain, proxied: true },
     { type: 'CNAME', name: APEX, content: subdomain, proxied: true }, // CNAME flattening at apex
   ];
   for (const rec of dns) {
-    // upsert: delete existing same-name records of type A/AAAA/CNAME first
     const ex = await cf('GET', `/zones/${zid}/dns_records?name=${rec.name}`);
-    for (const old of ex.json.result || []) {
-      if (['A', 'AAAA', 'CNAME'].includes(old.type)) await cf('DELETE', `/zones/${zid}/dns_records/${old.id}`);
-    }
+    const has = (ex.json.result || []).some((o) => ['A', 'AAAA', 'CNAME'].includes(o.type));
+    if (has) { console.log('dns', rec.name, ': already present (kept)'); continue; }
     const r = await cf('POST', `/zones/${zid}/dns_records`, rec);
-    console.log('dns', rec.name, '->', rec.content, ':', r.ok ? 'ok' : JSON.stringify(r.json.errors));
+    console.log('dns', rec.name, '->', rec.content, ':', r.ok ? 'created' : JSON.stringify(r.json.errors));
   }
 
   // 3. apex -> www 301 redirect (single redirect ruleset)
