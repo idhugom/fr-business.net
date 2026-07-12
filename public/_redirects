@@ -1,7 +1,6 @@
 # Cloudflare Pages redirects
-# Canonical host: www. — force apex → www (defensive; also enforced by a
-# Cloudflare Redirect Rule at the zone level once DNS is delegated).
-https://fr-business.net/*   https://www.fr-business.net/:splat   301!
+# apex (fr-business.net) → www is enforced by functions/_middleware.js
+# (Pages _redirects does not match on hostname, only on path).
 
 # Legacy WordPress endpoints that no longer exist on the static site
 /wp-admin/*   /   301
